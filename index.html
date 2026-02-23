@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Learning Adaptive LLM Decoding</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- KaTeX for math -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters: [{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+
+  <link rel="stylesheet" href="static/css/style.css" />
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════ HERO -->
+<header class="hero">
+  <div class="container">
+    <div class="venue-badge">ICML 2026 Submission</div>
+
+    <h1 class="paper-title">Learning Adaptive LLM Decoding</h1>
+
+    <div class="authors">
+      <span class="author">Anonymous Authors</span>
+    </div>
+
+    <div class="affiliations">
+      <span>Anonymous Institution</span>
+    </div>
+
+    <div class="link-buttons">
+      <a href="#" class="btn btn-primary" title="Paper PDF (coming soon)">
+        <i class="fa-solid fa-file-pdf"></i> Paper
+      </a>
+      <a href="#" class="btn btn-outline" title="Code (coming soon)">
+        <i class="fa-brands fa-github"></i> Code
+      </a>
+      <a href="#" class="btn btn-outline" title="arXiv (coming soon)">
+        <i class="fa-solid fa-scroll"></i> arXiv
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════ TEASER -->
+<section class="section teaser-section">
+  <div class="container narrow">
+    <figure class="teaser-figure">
+      <img src="static/images/teaser.png" alt="Decoding adapter overview" class="teaser-img placeholder-img" />
+      <figcaption>
+        <strong>Overview of Learned Decoding Adapters.</strong>
+        <em>(a)</em> The <strong>sequence-level adapter</strong> selects one decoding configuration per prompt (contextual bandit).
+        <em>(b)</em> The <strong>token-level adapter</strong> selects a (potentially different) decoding configuration at each generation step (POMDP).
+        Both adapters are layered on top of a frozen language model and trained with verifiable task rewards.
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ ABSTRACT -->
+<section class="section" id="abstract">
+  <div class="container narrow">
+    <h2 class="section-title">Abstract</h2>
+    <div class="abstract-box">
+      <p>
+        Decoding from large language models (LLMs) typically relies on fixed sampling hyperparameters
+        (e.g., temperature, top-<em>p</em>), despite substantial variation in task difficulty and uncertainty
+        across prompts and individual decoding steps. We propose to <strong>learn adaptive decoding policies</strong>
+        that dynamically select sampling strategies at inference time, conditioned on available compute resources.
+      </p>
+      <p>
+        Rather than fine-tuning the language model itself, we introduce lightweight <strong>decoding adapters</strong>
+        trained with reinforcement learning and verifiable terminal rewards (e.g. correctness on math and coding tasks).
+        At the <em>sequence level</em>, we frame decoding as a <strong>contextual bandit</strong> problem: a policy
+        selects a decoding strategy (e.g. greedy, top-<em>k</em>, min-<em>p</em>) for each prompt, conditioned on
+        the prompt embedding and a parallel sampling budget. At the <em>token level</em>, we model decoding as a
+        <strong>partially observable Markov decision process (POMDP)</strong>, where a policy selects sampling actions
+        at each token step based on internal model features and the remaining token budget.
+      </p>
+      <p>
+        Experiments on the <strong>MATH</strong> and <strong>CodeContests</strong> benchmarks show that the learned
+        adapters improve the accuracy–budget tradeoff: on MATH, the token-level adapter improves Pass@1 accuracy by
+        up to <strong>10.2%</strong> over the best static baseline under a fixed token budget, while the sequence-level
+        adapter yields <strong>2–3%</strong> gains under fixed parallel sampling.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ KEY RESULTS -->
+<section class="section alt-bg" id="results-highlight">
+  <div class="container">
+    <h2 class="section-title">Key Results</h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number">+10.2%</div>
+        <div class="stat-label">Pass@1 on MATH<br/>(token-level adapter, mix CoT)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">+2–3%</div>
+        <div class="stat-label">Pass@1 on MATH<br/>(sequence-level adapter)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">+5.7pp</div>
+        <div class="stat-label">Pass@1 on CodeContests<br/>(mix CoT, w/ budget)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">71.1%</div>
+        <div class="stat-label">AIME'25 thinking Pass@1<br/>(vs. 65.6% reported baseline)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ METHOD -->
+<section class="section" id="method">
+  <div class="container">
+    <h2 class="section-title">Method</h2>
+    <p class="section-subtitle">
+      We introduce two complementary decoding adapters that operate over a <em>frozen</em> LLM,
+      trained end-to-end with REINFORCE using only binary task-correctness rewards.
+    </p>
+
+    <div class="method-grid">
+      <!-- Sequence-level -->
+      <div class="method-card">
+        <div class="method-icon">
+          <i class="fa-solid fa-layer-group"></i>
+        </div>
+        <h3>Sequence-Level: Contextual Bandit</h3>
+        <p>
+          A single decoding configuration is chosen <em>once per prompt</em> before generation begins.
+          The adapter observes a prompt embedding $e$ and a parallel sampling budget $B$, then selects
+          an action $a \in \mathcal{S}$ (e.g., greedy, top-$k$, min-$p$) that is held fixed for the
+          entire rollout.
+        </p>
+        <div class="method-formula">
+          $$\pi_\theta(a \mid x),\quad x = [e;\, B]$$
+        </div>
+        <p>
+          The action space is built via a <strong>data-driven greedy selection</strong> procedure
+          (inspired by AuPair) that maximizes best-of-$S$ coverage across the validation set.
+          Training uses a Monte Carlo policy-gradient estimator with entropy regularization.
+        </p>
+      </div>
+
+      <!-- Token-level -->
+      <div class="method-card">
+        <div class="method-icon">
+          <i class="fa-solid fa-network-wired"></i>
+        </div>
+        <h3>Token-Level: POMDP</h3>
+        <p>
+          The adapter is invoked at <em>every decoding step</em>, allowing stochasticity to vary
+          <em>within</em> a single trajectory. At step $t$ it observes a compact state
+          $x_t = [e_t;\, b_t]$ derived from the LLM's last hidden state and the remaining token budget.
+        </p>
+        <div class="method-formula">
+          $$a_t \sim \pi_\theta(\cdot \mid x_t), \quad b_t = b - t$$
+        </div>
+        <p>
+          The adapter uses a lightweight <strong>3-layer MLP</strong> and focuses on
+          temperature-based actions (greedy / 0.5 / 1.0 / 1.25). Two training stabilizations
+          are key: filtering noisy-reward prompts and masking already-concentrated token distributions
+          (max probability &gt; 0.95).
+        </p>
+      </div>
+    </div>
+
+    <!-- Action space selection -->
+    <div class="subsection">
+      <h3 class="subsection-title">Action Space Selection</h3>
+      <p>
+        From a candidate pool of 180 decoding configurations (combinations of temperature, top-$k$,
+        top-$p$, and min-$p$), we greedily select a compact action set $\mathcal{S}$ that maximizes
+        the coverage objective
+      </p>
+      <div class="formula-block">
+        $$F(\mathcal{S}) = \frac{1}{N}\sum_{i=1}^{N} \max_{s \in \mathcal{S}} R(x_i, s)$$
+      </div>
+      <p>
+        Greedy selection consistently outperforms taking the top-$K$ highest-average strategies,
+        because it favors <em>complementary</em> strategies that succeed on different subsets of inputs.
+      </p>
+      <figure class="inline-figure">
+        <img src="static/images/greedy_selection.png" alt="Greedy vs Top-N selection" class="placeholder-img" />
+        <figcaption>
+          Greedy coverage-based selection (ours) vs. top-$N$ by average performance.
+          Greedy selection achieves higher best-of-$N$ accuracy by preferring diverse, complementary strategies.
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ RESULTS -->
+<section class="section alt-bg" id="results">
+  <div class="container">
+    <h2 class="section-title">Experimental Results</h2>
+    <p class="section-subtitle">
+      We evaluate on MATH and CodeContests using Qwen3-4B as the base model.
+      All results report mean accuracy ± 95% CI over $k=3$ independent runs.
+    </p>
+
+    <!-- MATH table -->
+    <h3 class="table-title">MATH Benchmark — Sequence-Level Adapter</h3>
+    <div class="table-wrapper">
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Setting</th>
+            <th>Best (static)</th>
+            <th>Mixed (static)</th>
+            <th>Adapter w/o budget</th>
+            <th>Adapter w/ budget</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td rowspan="2">Pass@1</td>
+            <td>w/o CoT</td>
+            <td>71.70 ± 1.25</td>
+            <td>71.20 ± 1.26</td>
+            <td>72.60 ± 1.24</td>
+            <td class="best">72.90 ± 1.23</td>
+          </tr>
+          <tr>
+            <td>mix CoT</td>
+            <td>72.10 ± 1.24</td>
+            <td>71.93 ± 1.25</td>
+            <td>73.60 ± 1.22</td>
+            <td class="best">74.20 ± 1.21</td>
+          </tr>
+          <tr>
+            <td rowspan="2">Pass@8</td>
+            <td>w/o CoT</td>
+            <td>76.70 ± 1.17</td>
+            <td>76.23 ± 1.18</td>
+            <td>78.30 ± 1.14</td>
+            <td class="best">78.46 ± 1.14</td>
+          </tr>
+          <tr>
+            <td>mix CoT</td>
+            <td>77.10 ± 1.16</td>
+            <td>76.57 ± 1.17</td>
+            <td>78.80 ± 1.13</td>
+            <td class="best">79.80 ± 1.11</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- CodeContests table -->
+    <h3 class="table-title">CodeContests — Sequence-Level Adapter</h3>
+    <div class="table-wrapper">
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Setting</th>
+            <th>Best (static)</th>
+            <th>Mixed (static)</th>
+            <th>Adapter w/o budget</th>
+            <th>Adapter w/ budget</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td rowspan="2">Pass@1</td>
+            <td>w/o CoT</td>
+            <td>11.43 ± 2.28</td>
+            <td>10.53 ± 2.19</td>
+            <td>14.53 ± 2.52</td>
+            <td class="best">14.50 ± 2.52</td>
+          </tr>
+          <tr>
+            <td>mix CoT</td>
+            <td>13.97 ± 2.48</td>
+            <td>14.80 ± 2.54</td>
+            <td>17.06 ± 2.69</td>
+            <td class="best">19.70 ± 2.85</td>
+          </tr>
+          <tr>
+            <td rowspan="2">Pass@8</td>
+            <td>w/o CoT</td>
+            <td>22.80 ± 3.00</td>
+            <td>22.23 ± 2.97</td>
+            <td class="best">26.08 ± 3.14</td>
+            <td>23.10 ± 3.02</td>
+          </tr>
+          <tr>
+            <td>mix CoT</td>
+            <td>29.10 ± 3.25</td>
+            <td>25.63 ± 3.12</td>
+            <td>29.90 ± 3.28</td>
+            <td class="best">32.50 ± 3.35</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Token-level results -->
+    <h3 class="table-title">MATH Benchmark — Token-Level Adapter</h3>
+    <div class="table-wrapper">
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Setting</th>
+            <th>Greedy</th>
+            <th>Mixed (static)</th>
+            <th>Adapter w/o budget</th>
+            <th>Δ</th>
+            <th>Adapter w/ budget</th>
+            <th>Δ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td rowspan="2">Pass@1</td>
+            <td>w/o CoT</td>
+            <td>71.33 ± 1.25</td>
+            <td>71.60 ± 1.25</td>
+            <td>78.28 ± 1.14</td>
+            <td class="delta">+6.68</td>
+            <td class="best">80.82 ± 1.07</td>
+            <td class="delta">+9.49</td>
+          </tr>
+          <tr>
+            <td>mix CoT</td>
+            <td>72.10 ± 1.24</td>
+            <td>72.67 ± 1.24</td>
+            <td>78.52 ± 1.14</td>
+            <td class="delta">+5.85</td>
+            <td class="best">82.33 ± 1.03</td>
+            <td class="delta best-delta">+10.23</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- AIME results -->
+    <h3 class="table-title">Generalization: AIME 2025</h3>
+    <p class="table-note">
+      Sequence-level adapter trained only on MATH-train, evaluated zero-shot on AIME 2025 (30 seeds).
+    </p>
+    <div class="table-wrapper">
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Setting</th>
+            <th>Reported (Qwen3-4B)</th>
+            <th>Adapter w/ budget</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td rowspan="2">Pass@1</td>
+            <td>non-thinking</td>
+            <td>19.1</td>
+            <td class="best">20.1 ± 2.62</td>
+          </tr>
+          <tr>
+            <td>thinking</td>
+            <td>65.6</td>
+            <td class="best">71.1 ± 2.96</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Analysis figure -->
+    <div class="subsection">
+      <h3 class="subsection-title">Entropy Modulation Analysis</h3>
+      <div class="figure-row">
+        <figure class="inline-figure half">
+          <img src="static/images/entropy_modulation.png" alt="Entropy modulation" class="placeholder-img" />
+          <figcaption>
+            <strong>Token-level entropy modulation.</strong>
+            The adapter more often collapses low-entropy tokens to near-deterministic behavior,
+            while preserving stochasticity on high-entropy tokens.
+            However, an entropy-only policy (without the full contextual representation)
+            reaches only ~72% Pass@1 vs. >80% for the full adapter.
+          </figcaption>
+        </figure>
+        <figure class="inline-figure half">
+          <img src="static/images/action_distribution.png" alt="Action distributions" class="placeholder-img" />
+          <figcaption>
+            <strong>Action distributions during training (MATH).</strong>
+            The sequence-level adapter concentrates mass on a small subset of high-performing
+            strategies while maintaining non-zero probability on alternatives—
+            a learned exploitation-vs-robustness tradeoff.
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ CONTRIBUTIONS -->
+<section class="section" id="contributions">
+  <div class="container narrow">
+    <h2 class="section-title">Contributions</h2>
+    <ul class="contributions-list">
+      <li>
+        <i class="fa-solid fa-circle-check"></i>
+        <div>
+          <strong>Unified RL framework for adaptive decoding.</strong>
+          We formulate decoding-time inference as a policy learning problem at both the prompt and token level,
+          under explicit compute budgets.
+        </div>
+      </li>
+      <li>
+        <i class="fa-solid fa-circle-check"></i>
+        <div>
+          <strong>No reward models, no preference labels.</strong>
+          Decoding adapters are trained <em>tabula rasa</em> from binary task-correctness signals,
+          while the underlying LLM remains frozen.
+        </div>
+      </li>
+      <li>
+        <i class="fa-solid fa-circle-check"></i>
+        <div>
+          <strong>Strong empirical gains.</strong>
+          Up to +10.2% Pass@1 on MATH with the token-level adapter and +2–3% with the sequence-level adapter;
+          out-of-domain generalization to AIME 2025 and CodeContests.
+        </div>
+      </li>
+      <li>
+        <i class="fa-solid fa-circle-check"></i>
+        <div>
+          <strong>Budget-aware training.</strong>
+          Conditioning on inference-time compute budget during training leads to more robust decoding behavior,
+          even at fixed evaluation budgets.
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ CITATION -->
+<section class="section alt-bg" id="citation">
+  <div class="container narrow">
+    <h2 class="section-title">Citation</h2>
+    <p>If you find this work useful, please cite:</p>
+    <div class="bibtex-block">
+      <button class="copy-btn" onclick="copyBibtex()" title="Copy BibTeX">
+        <i class="fa-regular fa-copy"></i> Copy
+      </button>
+      <pre id="bibtex-content">@inproceedings{anonymous2026adaptive,
+  title     = {Learning Adaptive {LLM} Decoding},
+  author    = {Anonymous Authors},
+  booktitle = {Proceedings of the 43rd International Conference on Machine Learning},
+  year      = {2026},
+  note      = {Under review}
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ FOOTER -->
+<footer class="site-footer">
+  <div class="container">
+    <p>
+      This website is under construction. Paper is under review at ICML 2026.
+    </p>
+    <p class="footer-note">
+      Website template inspired by <a href="https://nerfies.github.io" target="_blank">Nerfies</a>.
+    </p>
+  </div>
+</footer>
+
+<script src="static/js/main.js"></script>
+</body>
+</html>
