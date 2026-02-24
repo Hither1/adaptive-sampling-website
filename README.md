@@ -1,11 +1,11 @@
 # Learning Adaptive LLM Decoding — Paper Website
 
-This repository hosts the project page for the paper **"Learning Adaptive LLM Decoding"** (ICML 2026 submission).
+This repository hosts the project page for the paper **"Learning Adaptive LLM Decoding"**.
 
 ## Live Site
 
 The website is served via **GitHub Pages** at:
-`https://<your-github-username>.github.io/<repo-name>/`
+`https://hither1.github.io/adaptive-sampling-website/`
 
 ## Enabling GitHub Pages
 
