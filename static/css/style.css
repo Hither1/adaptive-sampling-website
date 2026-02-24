@@ -402,12 +402,12 @@ body {
   gap: 16px;
   justify-content: center;
   margin: 0 auto 20px;
-  max-width: 900px;
+  max-width: 1400px;
 }
 
 .teaser-pdf {
   flex: 1;
-  min-height: 400px;
+  min-height: 650px;
   border-radius: var(--radius);
   box-shadow: var(--shadow-lg);
 }
