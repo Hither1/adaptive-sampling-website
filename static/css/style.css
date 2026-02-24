@@ -6,10 +6,10 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --primary:      #2563eb;
-  --primary-dark: #1d4ed8;
-  --accent:       #7c3aed;
-  --text:         #1a1a2e;
+  --primary:      #0057FF;
+  --primary-dark: #0040CC;
+  --accent:       #00C8FF;
+  --text:         #0a0f1e;
   --text-light:   #4b5563;
   --text-muted:   #6b7280;
   --bg:           #ffffff;
@@ -49,7 +49,7 @@ body {
 
 /* ── Hero ─────────────────────────────────────────────────────── */
 .hero {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1e1b4b 100%);
+  background: linear-gradient(160deg, #020314 0%, #040829 45%, #050c1f 100%);
   color: #fff;
   padding: 80px 24px 64px;
   text-align: center;
@@ -62,8 +62,9 @@ body {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at 20% 50%, rgba(124,58,237,.18) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, rgba(37,99,235,.15) 0%, transparent 50%);
+    radial-gradient(ellipse at 15% 60%, rgba(0,180,255,.22) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 20%, rgba(0,87,255,.18) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 90%, rgba(0,200,255,.10) 0%, transparent 45%);
   pointer-events: none;
 }
 
@@ -132,12 +133,12 @@ body {
 
 .btn-primary {
   background: #fff;
-  color: #1e1b4b;
+  color: #020314;
 }
 .btn-primary:hover {
-  background: #e0e7ff;
+  background: #dbeafe;
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(0,0,0,.25);
+  box-shadow: 0 4px 14px rgba(0,87,255,.30);
 }
 
 .btn-outline {
@@ -333,7 +334,7 @@ body {
 }
 
 .results-table thead {
-  background: linear-gradient(135deg, #1e293b, #1e1b4b);
+  background: linear-gradient(135deg, #020314, #040829);
   color: #e2e8f0;
 }
 
@@ -535,7 +536,7 @@ img.placeholder-img::after {
 /* ── BibTeX ───────────────────────────────────────────────────── */
 .bibtex-block {
   position: relative;
-  background: #0f172a;
+  background: #020314;
   border-radius: var(--radius);
   margin-top: 20px;
   overflow: hidden;
@@ -579,7 +580,7 @@ img.placeholder-img::after {
 
 /* ── Footer ───────────────────────────────────────────────────── */
 .site-footer {
-  background: #0f172a;
+  background: #020314;
   color: #475569;
   text-align: center;
   padding: 36px 24px;
