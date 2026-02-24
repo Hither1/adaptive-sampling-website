@@ -129,10 +129,12 @@
     <p class="section-subtitle">
       We introduce two complementary decoding adapters that operate over a <em>frozen</em> LLM,
       trained end-to-end with REINFORCE using only binary task-correctness rewards.
+
+      For both cases, the adapter uses a lightweight <strong>3-layer MLP</strong>.
     </p>
 
     <div class="method-grid">
-      For both cases, the adapter uses a lightweight <strong>3-layer MLP</strong>.
+      
       <!-- Sequence-level -->
       <div class="method-card">
         <div class="method-icon">
