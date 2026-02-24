@@ -56,7 +56,10 @@
 <section class="section teaser-section">
   <div class="container narrow">
     <figure class="teaser-figure">
-      <img src="static/images/teaser.png" alt="Decoding adapter overview" class="teaser-img placeholder-img" />
+      <div class="teaser-pdfs">
+        <embed src="static/images/seq.pdf" type="application/pdf" class="teaser-pdf" />
+        <embed src="static/images/token.pdf" type="application/pdf" class="teaser-pdf" />
+      </div>
       <figcaption>
         <strong>Overview of Learned Decoding Adapters.</strong>
         <em>(a)</em> The <strong>sequence-level adapter</strong> selects one decoding configuration per prompt (contextual bandit).
@@ -195,7 +198,7 @@
         because it favors <em>complementary</em> strategies that succeed on different subsets of inputs.
       </p>
       <figure class="inline-figure">
-        <img src="static/images/greedy_selection.png" alt="Greedy vs Top-N selection" class="placeholder-img" />
+        <img src="static/images/seq/action_sel.png" alt="Greedy vs Top-N selection" class="placeholder-img" />
         <figcaption>
           Greedy coverage-based selection (ours) vs. top-$N$ by average performance.
           Greedy selection achieves higher best-of-$N$ accuracy by preferring diverse, complementary strategies.
@@ -235,7 +238,7 @@
             <td>w/o CoT</td>
             <td>71.70 ± 1.25</td>
             <td>71.20 ± 1.26</td>
-            <td>—</td>
+            <td>72.72</td>
             <td>72.60 ± 1.24</td>
             <td class="best">72.90 ± 1.23</td>
           </tr>
@@ -404,7 +407,7 @@
       <h3 class="subsection-title">Entropy Modulation Analysis</h3>
       <div class="figure-row">
         <figure class="inline-figure half">
-          <img src="static/images/entropy_modulation.png" alt="Entropy modulation" class="placeholder-img" />
+          <img src="static/images/entropy_adapter_effects.png" alt="Entropy modulation" class="placeholder-img" />
           <figcaption>
             <strong>Token-level entropy modulation.</strong>
             The adapter more often collapses low-entropy tokens to near-deterministic behavior,
@@ -414,7 +417,7 @@
           </figcaption>
         </figure>
         <figure class="inline-figure half">
-          <img src="static/images/action_distribution.png" alt="Action distributions" class="placeholder-img" />
+          <img src="static/images/seq/action_distribution.png" alt="Action distributions" class="placeholder-img" />
           <figcaption>
             <strong>Action distributions during training (MATH).</strong>
             The sequence-level adapter concentrates mass on a small subset of high-performing
