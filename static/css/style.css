@@ -404,13 +404,16 @@ body {
 
 .teaser-pdfs {
   display: flex;
-  flex-direction: column;
-  gap: 24px;
+  flex-direction: row;
+  gap: 16px;
+  align-items: flex-start;
   margin: 0 auto 20px;
 }
 
 .teaser-pdf {
-  width: 90%;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 100%;
   height: auto;
   display: block;
   border-radius: var(--radius);
