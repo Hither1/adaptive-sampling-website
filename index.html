@@ -197,13 +197,6 @@
         Greedy selection consistently outperforms taking the top-$K$ highest-average strategies,
         because it favors <em>complementary</em> strategies that succeed on different subsets of inputs.
       </p>
-      <figure class="inline-figure">
-        <img src="static/images/seq/action_sel.png" alt="Greedy vs Top-N selection" class="placeholder-img" />
-        <figcaption>
-          Greedy coverage-based selection (ours) vs. top-$N$ by average performance.
-          Greedy selection achieves higher best-of-$N$ accuracy by preferring diverse, complementary strategies.
-        </figcaption>
-      </figure>
     </div>
   </div>
 </section>
@@ -423,6 +416,13 @@
             The sequence-level adapter concentrates mass on a small subset of high-performing
             strategies while maintaining non-zero probability on alternatives—
             a learned exploitation-vs-robustness tradeoff.
+          </figcaption>
+        </figure>
+        <figure class="inline-figure half">
+          <img src="static/images/seq/action_sel.png" alt="Greedy vs Top-N selection" class="placeholder-img" />
+          <figcaption>
+            <strong>Greedy coverage-based selection vs. top-$N$.</strong>
+            Greedy selection achieves higher best-of-$N$ accuracy by preferring diverse, complementary strategies.
           </figcaption>
         </figure>
       </div>
