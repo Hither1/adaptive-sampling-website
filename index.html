@@ -142,8 +142,49 @@
   </div>
 </section>
 
+<!-- ═══════════════════════════════════════════════════════════ CONTRIBUTIONS -->
+<section class="section" id="contributions">
+  <div class="container narrow">
+    <h2 class="section-title">Contributions</h2>
+    <ul class="contributions-list">
+      <li>
+        <i class="fa-solid fa-circle-check"></i>
+        <div>
+          <strong>Unified RL framework for adaptive decoding.</strong>
+          We formulate decoding-time inference as a policy learning problem at both the prompt and token level,
+          under explicit compute budgets.
+        </div>
+      </li>
+      <li>
+        <i class="fa-solid fa-circle-check"></i>
+        <div>
+          <strong>No reward models, no preference labels.</strong>
+          Decoding adapters are trained <em>tabula rasa</em> from binary task-correctness signals,
+          while the underlying LLM remains frozen.
+        </div>
+      </li>
+      <li>
+        <i class="fa-solid fa-circle-check"></i>
+        <div>
+          <strong>Strong empirical gains.</strong>
+          Up to +10.2% Pass@1 on MATH with the token-level adapter and +2–3% with the sequence-level adapter;
+          out-of-domain generalization to AIME 2025 and CodeContests.
+        </div>
+      </li>
+      <li>
+        <i class="fa-solid fa-circle-check"></i>
+        <div>
+          <strong>Budget-aware training.</strong>
+          Conditioning on inference-time compute budget during training leads to more robust decoding behavior,
+          even at fixed evaluation budgets.
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
 <!-- ═══════════════════════════════════════════════════════════ METHOD -->
-<section class="section" id="method">
+<section class="section alt-bg" id="method">
   <div class="container">
     <h2 class="section-title">Method</h2>
     <p class="section-subtitle">
@@ -511,47 +552,6 @@
         
       </div>
     </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════════ CONTRIBUTIONS -->
-<section class="section" id="contributions">
-  <div class="container narrow">
-    <h2 class="section-title">Contributions</h2>
-    <ul class="contributions-list">
-      <li>
-        <i class="fa-solid fa-circle-check"></i>
-        <div>
-          <strong>Unified RL framework for adaptive decoding.</strong>
-          We formulate decoding-time inference as a policy learning problem at both the prompt and token level,
-          under explicit compute budgets.
-        </div>
-      </li>
-      <li>
-        <i class="fa-solid fa-circle-check"></i>
-        <div>
-          <strong>No reward models, no preference labels.</strong>
-          Decoding adapters are trained <em>tabula rasa</em> from binary task-correctness signals,
-          while the underlying LLM remains frozen.
-        </div>
-      </li>
-      <li>
-        <i class="fa-solid fa-circle-check"></i>
-        <div>
-          <strong>Strong empirical gains.</strong>
-          Up to +10.2% Pass@1 on MATH with the token-level adapter and +2–3% with the sequence-level adapter;
-          out-of-domain generalization to AIME 2025 and CodeContests.
-        </div>
-      </li>
-      <li>
-        <i class="fa-solid fa-circle-check"></i>
-        <div>
-          <strong>Budget-aware training.</strong>
-          Conditioning on inference-time compute budget during training leads to more robust decoding behavior,
-          even at fixed evaluation budgets.
-        </div>
-      </li>
-    </ul>
   </div>
 </section>
 
