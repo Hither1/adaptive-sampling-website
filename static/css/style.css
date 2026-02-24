@@ -397,6 +397,10 @@ body {
   box-shadow: var(--shadow-lg);
 }
 
+.teaser-section .container {
+  max-width: 92vw;
+}
+
 .teaser-pdfs {
   display: flex;
   gap: 16px;
@@ -407,6 +411,7 @@ body {
 
 .teaser-pdf {
   flex: 1;
+  min-width: 0;
   width: 0;
   height: auto;
   border-radius: var(--radius);
