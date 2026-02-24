@@ -408,6 +408,8 @@ body {
   gap: 16px;
   align-items: flex-start;
   margin: 0 auto 20px;
+  max-width: 900px;
+  width: 100%;
 }
 
 .teaser-pdf {
