@@ -197,6 +197,13 @@
         Greedy selection consistently outperforms taking the top-$K$ highest-average strategies,
         because it favors <em>complementary</em> strategies that succeed on different subsets of inputs.
       </p>
+      <figure class="inline-figure half">
+          <img src="static/images/seq/action_sel.png" alt="Greedy vs Top-N selection" class="placeholder-img" />
+          <figcaption>
+            <strong>Greedy coverage-based selection vs. top-$N$.</strong>
+            Greedy selection achieves higher best-of-$N$ accuracy by preferring diverse, complementary strategies.
+          </figcaption>
+        </figure>
     </div>
   </div>
 </section>
@@ -418,13 +425,7 @@
             a learned exploitation-vs-robustness tradeoff.
           </figcaption> -->
         <!-- </figure> -->
-        <figure class="inline-figure half">
-          <img src="static/images/seq/action_sel.png" alt="Greedy vs Top-N selection" class="placeholder-img" />
-          <figcaption>
-            <strong>Greedy coverage-based selection vs. top-$N$.</strong>
-            Greedy selection achieves higher best-of-$N$ accuracy by preferring diverse, complementary strategies.
-          </figcaption>
-        </figure>
+        
         <figure class="inline-figure half">
           <img src="static/images/length_distribution.png" alt="Length distribution" class="placeholder-img" />
           <figcaption>
