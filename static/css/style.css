@@ -407,7 +407,8 @@ body {
 
 .teaser-pdf {
   flex: 1;
-  min-height: 650px;
+  width: 0;
+  height: auto;
   border-radius: var(--radius);
   box-shadow: var(--shadow-lg);
 }
