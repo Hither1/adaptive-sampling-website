@@ -111,7 +111,7 @@
         <div class="stat-label">Pass@1 on MATH<br/>(sequence-level adapter)</div>
       </div>
       <div class="stat-card">
-        <div class="stat-number">+5.7pp</div>
+        <div class="stat-number">+5.7%</div>
         <div class="stat-label">Pass@1 on CodeContests<br/>(mix CoT, w/ budget)</div>
       </div>
       <div class="stat-card">
@@ -132,6 +132,7 @@
     </p>
 
     <div class="method-grid">
+      For both cases, the adapter uses a lightweight <strong>3-layer MLP</strong>.
       <!-- Sequence-level -->
       <div class="method-card">
         <div class="method-icon">
@@ -169,8 +170,7 @@
           $$a_t \sim \pi_\theta(\cdot \mid x_t), \quad b_t = b - t$$
         </div>
         <p>
-          The adapter uses a lightweight <strong>3-layer MLP</strong> and focuses on
-          temperature-based actions (greedy / 0.5 / 1.0 / 1.25). Two training stabilizations
+          The adapter focuses on temperature-based actions (greedy / 0.5 / 1.0 / 1.25). Two training stabilizations
           are key: filtering noisy-reward prompts and masking already-concentrated token distributions
           (max probability &gt; 0.95).
         </p>
