@@ -410,11 +410,19 @@ body {
 }
 
 .teaser-pdf {
-  width: 90%;
   height: auto;
   display: block;
   border-radius: var(--radius);
   box-shadow: var(--shadow-lg);
+}
+
+.teaser-pdf:nth-child(1) {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.teaser-pdf:nth-child(2) {
+  width: 100%;
 }
 
 figure figcaption {
